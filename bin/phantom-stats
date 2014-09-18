@@ -11,4 +11,4 @@ if (process.argv.length < 3) {
 
 mainUrl = process.argv[2]
 
-s.run(mainUrl, function(result) { console.log(result);});
+s.run(mainUrl, function(result) { console.log(JSON.stringify(result));});
