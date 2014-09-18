@@ -23,8 +23,7 @@ run = (url, callback) ->
   childProcess.execFile(binPath, childArgs, (err, stdOut, stdErr) ->
 
     har = stdOut
-    console.log har
-    return
+
     result = processHARFile har
 
     callback result

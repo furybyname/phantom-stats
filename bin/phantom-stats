@@ -10,5 +10,5 @@ if (process.argv.length < 3) {
 }
 
 mainUrl = process.argv[2]
-console.log(mainUrl);
+
 s.run(mainUrl, function(result) { console.log(result);});
