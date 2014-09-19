@@ -1,5 +1,5 @@
 waitFor = (testFx, onReady, timeOutMillis) ->
-  maxtimeOutMillis = (if timeOutMillis then timeOutMillis else 3000) #< Default Max Timout is 3s
+  maxtimeOutMillis = (if timeOutMillis then timeOutMillis else 3000)
   start = new Date().getTime()
   condition = false
   interval = setInterval(->
@@ -132,16 +132,13 @@ else
       phantom.exit(1)
     else
       now = new Date().valueOf()
-      waitFor(-> new Date().valueOf() - 5000 > now
-        ,
-        ->
-          page.endTime = new Date()
-          page.title = page.evaluate ->
-            document.title
 
-          har = createHAR page.address, page.title, page.startTime, page.resources
-          console.log JSON.stringify har
-          phantom.exit()
-        , 8000
-      )
+      page.endTime = new Date()
+      page.title = page.evaluate ->
+        document.title
+
+      har = createHAR page.address, page.title, page.startTime, page.resources
+      console.log JSON.stringify har
+      phantom.exit()
+
 
