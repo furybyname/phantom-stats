@@ -4,12 +4,12 @@ phantomjs = require 'phantomjs'
 binPath = phantomjs.path
 fs = require('fs')
 
-processHARFile = (data) ->
+processHARFile = (data, config) ->
   parsed = JSON.parse(data)
   processor = require('har-summary')
-  return processor.run(parsed, {})
+  return processor.run(parsed, config)
 
-run = (url, callback) ->
+run = (url, config, callback) ->
   childArgs = [
     path.join(__dirname, 'netsniff.js'),
     url
@@ -20,7 +20,7 @@ run = (url, callback) ->
     fs.readFile("tmp.json", (err, data) ->
       har = data
 
-      result = processHARFile har
+      result = processHARFile har, config
 
       try
         fs.unlink "./tmp.json"

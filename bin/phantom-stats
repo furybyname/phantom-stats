@@ -5,10 +5,19 @@ var lib = path.join(path.dirname(fs.realpathSync(__filename)), '../lib');
 var s = require(lib + '/main.js');
 
 if (process.argv.length < 3) {
-  console.log('Usage: yslownetsniff.coffee <some URL>');
+  console.log('Usage: phantom-stats <some URL> [<configFile>]');
   process.exit(1);
 }
 
 mainUrl = process.argv[2]
 
-s.run(mainUrl, function(result) { console.log(JSON.stringify(result));});
+if (process.argv.length == 4) {
+    filename = process.argv[3];
+    fs.readFile(filename, function(err, data) {
+        config = JSON.parse(data);
+        s.run(mainUrl, config, function(result) { console.log(JSON.stringify(result));});
+    });
+} else {
+    s.run(mainUrl, {}, function(result) { console.log(JSON.stringify(result));});
+}
+

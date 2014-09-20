@@ -1,0 +1,14 @@
+{
+    "cdn": {
+        "internal": ["http://static.somesite.com"]
+    },
+    "pages" : [
+    {
+        "id" : "http://www.somesite.com",
+        "friendlyName" : "Home page",
+        "cdn": {
+            "internal": ["http://another.static.somesite.com"]
+        }
+    }
+    ]
+}
