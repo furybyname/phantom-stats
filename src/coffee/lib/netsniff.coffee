@@ -101,53 +101,58 @@ createHAR = (address, title, startTime, resources) ->
 page = require('webpage').create()
 system = require 'system'
 
-if system.args.length is 1
-  console.log 'Usage: netsniff.coffee <some URL>'
+if system.args.length < 3
+  console.log 'Usage: netsniff.coffee <some URL> <filename>'
   phantom.exit 1
 else
-  page.address = system.args[1]
-  page.resources = []
+  try
+    page.address = system.args[1]
+    page.resources = []
 
-  page.onLoadStarted = ->
-    page.startTime = new Date()
+    filename = system.args[2]
 
-  page.onResourceRequested = (req) ->
-    page.resources[req.id] =
-      request: req
-      startReply: null
-      endReply: null
+    page.onLoadStarted = ->
+      page.startTime = new Date()
 
-  page.onResourceReceived = (res) ->
-    if res.stage is 'start'
-      page.resources[res.id].startReply = res
-    if res.stage is 'end'
-      page.resources[res.id].endReply = res
+    page.onResourceRequested = (req) ->
+      page.resources[req.id] =
+        request: req
+        startReply: null
+        endReply: null
 
-  page.settings.userAgent = 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36'
-  #page.onResourceRequested = (request) -> # no-op to wait for full page load
-  #page.onResourceReceived = (response) -> # no-op to wait for full page load
-  page.open page.address, (status) ->
-    if status isnt 'success'
-      console.log 'FAIL to load the address'
-      phantom.exit(1)
-    else
-      now = new Date().valueOf()
+    page.onResourceReceived = (res) ->
+      if res.stage is 'start'
+        page.resources[res.id].startReply = res
+      if res.stage is 'end'
+        page.resources[res.id].endReply = res
 
-      page.endTime = new Date()
-      page.title = page.evaluate ->
-        document.title
+    page.settings.userAgent = 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36'
+    #page.onResourceRequested = (request) -> # no-op to wait for full page load
+    #page.onResourceReceived = (response) -> # no-op to wait for full page load
+    page.open page.address, (status) ->
+      if status isnt 'success'
+        console.log 'FAIL to load the address'
+        phantom.exit(1)
+      else
+        now = new Date().valueOf()
 
-      har = createHAR page.address, page.title, page.startTime, page.resources
-      fs = require('fs')
+        page.endTime = new Date()
+        page.title = page.evaluate ->
+          document.title
 
-      try
-        filePath = "tmp.json"
-        fs.write(filePath, JSON.stringify(har), "w")
-      catch e
-        console.log e
+        har = createHAR page.address, page.title, page.startTime, page.resources
+        fs = require('fs')
+
+        try
+          filePath = filename
+          fs.write(filePath, JSON.stringify(har), "w")
+        catch e
+          console.log e
+          phantom.exit()
+
         phantom.exit()
-
-      phantom.exit()
+  catch e
+    phantom.exit(1)
 
 
 

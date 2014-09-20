@@ -3,27 +3,29 @@ childProcess = require 'child_process'
 phantomjs = require 'phantomjs'
 binPath = phantomjs.path
 fs = require('fs')
-
+sanitize = require('sanitize-filename')
 processHARFile = (data, config) ->
   parsed = JSON.parse(data)
   processor = require('har-summary')
   return processor.run(parsed, config)
 
 run = (url, config, callback) ->
+  filename = sanitize(url).replace(/\./g, '') + '.json'
+
   childArgs = [
     path.join(__dirname, 'netsniff.js'),
-    url
+    url,
+    filename
   ]
 
   childProcess.execFile(binPath, childArgs, (err, stdOut, stdErr) ->
-
-    fs.readFile("tmp.json", (err, data) ->
+    fs.readFile(filename, (err, data) ->
       har = data
 
       result = processHARFile har, config
 
       try
-        fs.unlink "./tmp.json"
+        fs.unlink(filename, -> )
       catch
         console.log "Failed to delete tmp file tmp.json"
 
