@@ -138,7 +138,16 @@ else
         document.title
 
       har = createHAR page.address, page.title, page.startTime, page.resources
-      console.log JSON.stringify har
+      fs = require('fs')
+
+      try
+        filePath = "tmp.json"
+        fs.write(filePath, JSON.stringify(har), "w")
+      catch e
+        console.log e
+        phantom.exit()
+
       phantom.exit()
+
 
 

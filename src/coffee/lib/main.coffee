@@ -2,6 +2,7 @@ path = require 'path'
 childProcess = require 'child_process'
 phantomjs = require 'phantomjs'
 binPath = phantomjs.path
+fs = require('fs')
 
 processHARFile = (data) ->
   parsed = JSON.parse(data)
@@ -16,11 +17,18 @@ run = (url, callback) ->
 
   childProcess.execFile(binPath, childArgs, (err, stdOut, stdErr) ->
 
-    har = stdOut
+    fs.readFile("tmp.json", (err, data) ->
+      har = data
 
-    result = processHARFile har
+      result = processHARFile har
 
-    callback result
+      try
+        fs.unlink "tmp.json"
+      catch
+        console.log "Failed to delete tmp file tmp.json"
+
+      callback result
+    )
   )
 
 exports.run = run
