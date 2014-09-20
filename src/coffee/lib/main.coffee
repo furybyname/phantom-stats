@@ -25,11 +25,12 @@ run = (url, config, callback) ->
       result = processHARFile har, config
 
       try
-        fs.unlink(filename, -> )
+        fs.unlink(filename, ->
+          callback result
+        )
       catch
         console.log "Failed to delete tmp file tmp.json"
-
-      callback result
+        callback result
     )
   )
 
