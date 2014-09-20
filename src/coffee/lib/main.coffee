@@ -23,7 +23,7 @@ run = (url, callback) ->
       result = processHARFile har
 
       try
-        fs.unlink "tmp.json"
+        fs.unlink "./tmp.json"
       catch
         console.log "Failed to delete tmp file tmp.json"
 
