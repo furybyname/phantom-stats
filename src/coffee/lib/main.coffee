@@ -12,7 +12,10 @@ processHARFile = (data, config) ->
 run = (url, config, callback) ->
   filename = sanitize(url).replace(/\./g, '') + '.json'
 
+
   childArgs = [
+    '--disk-cache=false',
+    '--max-disk-cache-size=0',
     path.join(__dirname, 'netsniff.js'),
     url,
     filename
