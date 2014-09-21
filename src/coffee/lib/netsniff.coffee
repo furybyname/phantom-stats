@@ -21,6 +21,36 @@ waitFor = (testFx, onReady, timeOutMillis) ->
   , 250) #< repeat check every 250ms
   return
 
+total = 0
+retry = 0
+doWait = (p, d, fname) ->
+
+  if total > 0 and retry < 3
+    retry++
+    return setTimeout(->
+      doWait(p,d,fname)
+
+    , 2000
+    )
+  now = new Date().valueOf()
+
+  p.endTime = new Date()
+
+  p.title = p.evaluate ->
+    document.title
+
+  har = createHAR p.address, p.title, p.startTime, p.resources
+  fs = require('fs')
+
+  try
+    filePath = fname
+    fs.write(filePath, JSON.stringify(har), "w")
+  catch e
+    console.log e
+    phantom.exit()
+
+  phantom.exit()
+
 if not Date::toISOString
   Date::toISOString = ->
     pad = (n) ->
@@ -115,6 +145,7 @@ else
       page.startTime = new Date()
 
     page.onResourceRequested = (req) ->
+      total++
       page.resources[req.id] =
         request: req
         startReply: null
@@ -122,35 +153,29 @@ else
 
     page.onResourceReceived = (res) ->
       if res.stage is 'start'
+
         page.resources[res.id].startReply = res
       if res.stage is 'end'
+        total--
         page.resources[res.id].endReply = res
 
     page.settings.userAgent = 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36'
-    #page.onResourceRequested = (request) -> # no-op to wait for full page load
-    #page.onResourceReceived = (response) -> # no-op to wait for full page load
+    #page.onResourceRequested += (request) -> total++
+    #page.onResourceReceived += (response) -> total--
+    #page.onResourceError = (response) -> total--
+    #page.onResourceTimeout = (response) -> total--
+
     page.open page.address, (status) ->
       if status isnt 'success'
         console.log 'FAIL to load the address'
         phantom.exit(1)
       else
-        now = new Date().valueOf()
 
-        page.endTime = new Date()
-        page.title = page.evaluate ->
-          document.title
+        setTimeout(-> doWait(page, document, filename)
+          ,
+          1500)
 
-        har = createHAR page.address, page.title, page.startTime, page.resources
-        fs = require('fs')
 
-        try
-          filePath = filename
-          fs.write(filePath, JSON.stringify(har), "w")
-        catch e
-          console.log e
-          phantom.exit()
-
-        phantom.exit()
   catch e
     phantom.exit(1)
 
