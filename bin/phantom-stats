@@ -5,19 +5,23 @@ var lib = path.join(path.dirname(fs.realpathSync(__filename)), '../lib');
 var s = require(lib + '/main.js');
 
 if (process.argv.length < 3) {
-  console.log('Usage: phantom-stats <some URL> [<configFile>]');
+  console.log('Usage: phantom-stats <some URL> device [<configFile>]');
   process.exit(1);
 }
 
 mainUrl = process.argv[2]
 
-if (process.argv.length == 4) {
-    filename = process.argv[3];
+var device = 'mobile';
+if (process.argv.length >= 4) {
+    device = process.argv[3];
+}
+if (process.argv.length == 5) {
+    filename = process.argv[4];
     fs.readFile(filename, function(err, data) {
         config = JSON.parse(data);
-        s.run(mainUrl, config, function(result) { console.log(JSON.stringify(result));});
+        s.run(mainUrl, config, function(result) { console.log(JSON.stringify(result));}, device);
     });
 } else {
-    s.run(mainUrl, {}, function(result) { console.log(JSON.stringify(result));});
+    s.run(mainUrl, {}, function(result) { console.log(JSON.stringify(result));}, device);
 }
 

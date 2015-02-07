@@ -9,16 +9,17 @@ processHARFile = (data, config) ->
   processor = require('har-summary')
   return processor.run(parsed, config)
 
-run = (url, config, callback) ->
+run = (url, config, callback, device = 'mobile') ->
   filename = sanitize(url).replace(/\./g, '') + '.json'
 
-
+  console.log 'device: ' + device
   childArgs = [
     '--disk-cache=false',
     '--max-disk-cache-size=0',
     path.join(__dirname, 'netsniff.js'),
     url,
-    filename
+    filename,
+    device
   ]
 
   childProcess.execFile(binPath, childArgs, (err, stdOut, stdErr) ->
@@ -28,9 +29,9 @@ run = (url, config, callback) ->
       result = processHARFile har, config
 
       try
-        fs.unlink(filename, ->
+        ###fs.unlink(filename, ->
           callback result
-        )
+        )###
       catch
         console.log "Failed to delete tmp file tmp.json"
         callback result
