@@ -2,7 +2,7 @@
   "name": "phantom-stats",
   "description": "Use phantomjs netsniff example to load a web page and extract a HAR file, then extract a summary of page components",
   "author": "Dave Archer",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "repository": {
     "url": "git@github.com:furybyname/phantom-stats.git",
     "type": "git"
@@ -15,7 +15,7 @@
     "grunt-contrib-watch": "*",
     "grunt-contrib-coffee": "*",
     "phantomjs": "~1.9.0-1",
-    "grunt-lib-phantomjs": "0.2.1",
+    "grunt-lib-phantomjs": "0.2.0",
     "sanitize-filename": "*",
     "har-summary": "*"
   },
